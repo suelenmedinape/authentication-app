@@ -9,6 +9,7 @@ Aplicação cliente de e-commerce desenvolvida em JavaScript puro, sem framework
 - Integração com backend para autenticação e operações de conta
 - Interface moderna e responsiva
 - Estrutura modular de páginas (login, cadastro, conta)
+- As informaçoes do usuário são salvas no `localStorage`
 
 ## Estrutura do Projeto
 
