@@ -1,6 +1,6 @@
-# Cliente App - E-commerce em JavaScript Puro
+# Cliente App - E-commerce em JavaScript Vanilla
 
-Aplicação cliente de e-commerce desenvolvida em JavaScript puro, sem frameworks, com foco em funcionalidades essenciais para um sistema de compras online.
+Aplicação cliente de e-commerce desenvolvida em JavaScript vanilla, sem frameworks, com foco em funcionalidades essenciais para um sistema de compras online.
 
 ## Funcionalidades
 
@@ -53,4 +53,4 @@ cliente-app/
 ## Observações
 
 - Este projeto é apenas o front-end e depende de um backend para autenticação e operações de conta.
-- Ideal para estudos de JavaScript puro e integração com APIs REST. 
+- Ideal para estudos de JavaScript vanilla e integração com APIs REST. 
