@@ -14,8 +14,7 @@ Aplicação cliente de e-commerce desenvolvida em JavaScript puro, sem framework
 ## Estrutura do Projeto
 
 ```
-frontend-js-puro/
-└── cliente-app/
+cliente-app/
     ├── index.html
     ├── package.json
     ├── public/
