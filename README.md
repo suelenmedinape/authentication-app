@@ -47,7 +47,7 @@ cliente-app/
 ## Tecnologias Utilizadas
 
 - JavaScript (ES6+)
-- HTML5 & CSS3
+- [Tailwind](https://tailwindcss.com/docs/installation/using-vite) e [Flowbite](https://flowbite.com/) para estilização das paginas
 - [Vite](https://vitejs.dev/) para build e desenvolvimento
 
 ## Observações
