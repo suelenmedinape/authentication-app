@@ -1,0 +1,44 @@
+@import "tailwindcss";
+@import "flowbite/src/themes/default";
+@plugin "flowbite/plugin";
+@source "../node_modules/flowbite";
+
+:root {
+    /* Cores primárias */
+    --color-primary-50: #fffbeb;
+    --color-primary-100: #fef3c7;
+    --color-primary-200: #fde68a;
+    --color-primary-300: #fcd34d;
+    --color-primary-400: #fbbf24;
+    --color-primary-500: #f59e0b;
+    --color-primary-600: #d97706;
+    --color-primary-700: #b45309;
+    --color-primary-800: #92400e;
+    --color-primary-900: #78350f;
+    --color-primary-950: #451a03;
+}
+
+/* Classes utilitárias */
+.text-primary-50 { color: var(--color-primary-50); }
+.text-primary-100 { color: var(--color-primary-100); }
+.text-primary-200 { color: var(--color-primary-200); }
+.text-primary-300 { color: var(--color-primary-300); }
+.text-primary-400 { color: var(--color-primary-400); }
+.text-primary-500 { color: var(--color-primary-500); }
+.text-primary-600 { color: var(--color-primary-600); }
+.text-primary-700 { color: var(--color-primary-700); }
+.text-primary-800 { color: var(--color-primary-800); }
+.text-primary-900 { color: var(--color-primary-900); }
+.text-primary-950 { color: var(--color-primary-950); }
+
+.bg-primary-50 { background-color: var(--color-primary-50); }
+.bg-primary-100 { background-color: var(--color-primary-100); }
+.bg-primary-200 { background-color: var(--color-primary-200); }
+.bg-primary-300 { background-color: var(--color-primary-300); }
+.bg-primary-400 { background-color: var(--color-primary-400); }
+.bg-primary-500 { background-color: var(--color-primary-500); }
+.bg-primary-600 { background-color: var(--color-primary-600); }
+.bg-primary-700 { background-color: var(--color-primary-700); }
+.bg-primary-800 { background-color: var(--color-primary-800); }
+.bg-primary-900 { background-color: var(--color-primary-900); }
+.bg-primary-950 { background-color: var(--color-primary-950); }
