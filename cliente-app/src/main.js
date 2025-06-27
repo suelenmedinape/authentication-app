@@ -1,5 +1,5 @@
 import "./style.css";
-import "./style-main.css"
+import "./style-main.css";
 import { AuthService } from "./service/AuthService.js";
 
 export class Main {
@@ -25,47 +25,53 @@ export class Main {
     return this.#token;
   }
 
-  get getAdminBar() {
-    return this.#adminBar;
-  }
-
   init() {
+    this.hideAll();
     this.checkAuth();
     this.setupLogout();
   }
 
-  checkAuth() {
+  hideAll() {
     this.#loginBtn.style.display = "none";
     this.#registerBtn.style.display = "none";
     this.#userDropdownBtn.style.display = "none";
     this.#accountBtn.style.display = "none";
     this.#logoutBtn.style.display = "none";
     this.#adminBar.style.display = "none";
+  }
 
+  showClientUI() {
+    this.#userDropdownBtn.style.display = "inline-flex";
+    this.#accountBtn.style.display = "block";
+    this.#logoutBtn.style.display = "block";
+  }
+
+  showAdminUI() {
+    this.showClientUI();
+    this.#adminBar.style.display = "block";
+  }
+
+  showGuestUI() {
+    this.#loginBtn.style.display = "block";
+    this.#registerBtn.style.display = "block";
+  }
+
+  checkAuth() {
     if (this.getToken && this.getRole === "ROLE_CLIENT") {
-      this.#userDropdownBtn.style.display = "inline-flex";
-      this.#accountBtn.style.display = "block";
-      this.#logoutBtn.style.display = "block";
-      this.#adminBar.style.display = "none"
+      this.showClientUI();
     } else if (this.getToken && this.getRole === "ROLE_ADMIN") {
-      this.#userDropdownBtn.style.display = "inline-flex";
-      this.#accountBtn.style.display = "block";
-      this.#logoutBtn.style.display = "block";
-      this.#adminBar.style.display = "block";
+      this.showAdminUI();
     } else {
-      this.#loginBtn.style.display = "block";
-      this.#registerBtn.style.display = "block";
+      this.showGuestUI();
     }
   }
 
   setupLogout() {
-    if (this.#logoutBtn) {
-      this.#logoutBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        this.authService.logout();
-        window.location.reload();
-      });
-    }
+    this.#logoutBtn?.addEventListener("click", (e) => {
+      e.preventDefault();
+      this.authService.logout();
+      window.location.reload();
+    });
   }
 }
 

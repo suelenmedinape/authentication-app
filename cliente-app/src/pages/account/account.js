@@ -2,111 +2,203 @@ import { AccountService } from "../../service/AccountService.js";
 import { AuthService } from "../../service/AuthService.js";
 
 export class Account {
-    #btnAddDadosModal = document.querySelector("#add-dados-modal");
-    #modal = document.querySelector("#myModal");
-    #span = document.getElementsByClassName("close")[0];
+    #elements = {
+        btnAddDadosModal: document.querySelector("#add-dados-modal"),
+        modal: document.querySelector("#myModal"),
+        span: document.getElementsByClassName("close")[0],
+        cancelBtn: document.querySelector(".cancel-btn"),
+        form: document.querySelector("#add-dados-user"),
+        loginBtn: document.querySelector("#loginBtn"),
+        registerBtn: document.querySelector("#registerBtn"),
+        userDropdownBtn: document.querySelector("#userDropdownButton1"),
+        accountBtn: document.querySelector("#accountBtn"),
+        logoutBtn: document.querySelector("#logoutBtn"),
+        adminBar: document.querySelector("#adminBar"),
+    };
 
-    constructor(accountService = new AccountService()) {
+    #role = localStorage.getItem("role");
+    #token = localStorage.getItem("token");
+    #currentUserData = null;
+
+    constructor(accountService = new AccountService(), authService = new AuthService()) {
         this.accountService = accountService;
+        this.authService = authService;
         this.init();
-    }
-
-    get getbtnAddDadosModal() {
-        return this.#btnAddDadosModal;
-    }
-
-    get getModal() {
-        return this.#modal;
-    }
-
-    get getSpan() {
-        return this.#span;
     }
 
     init() {
         this.profile();
         this.openModal();
-        this.updateData();
+        this.setupFormSubmit();
+        this.checkAuth();
+        this.setupLogout();
+    }
+
+    get getRole() {
+        return this.#role;
+    }
+
+    get getToken() {
+        return this.#token;
     }
 
     async profile() {
         try {
-            const {response, responseData} = await this.accountService.profile();
-
+            const { response, responseData } = await this.accountService.profile();
             if (response.ok) {
+                this.#currentUserData = responseData;
                 this.updateProfileUI(responseData);
-                return true;
             } else {
                 console.error("Erro ao obter dados:", responseData);
-                return false;
             }
         } catch (e) {
             console.error("Erro na requisição:", e);
-            return false;
         }
     }
 
     updateProfileUI(userData) {
-        document.getElementById('user-name').textContent = userData.name || 'Não informado';
-        document.getElementById('user-email').textContent = userData.email || 'Não informado';
-        document.getElementById('user-phone').textContent = userData.phone || 'Não informado';
-        document.getElementById('user-address').textContent = [
-            userData.address.street || 'Não informado',
-            userData.address.number || 'Não informado',
-            userData.address.neighborhood || 'Não informado',
-            userData.address.city || 'Não informado',
-            userData.address.state || 'Não informado'
-        ].join(', ');
-        document.getElementById('user-cpf').textContent = userData.cpf || 'Não informado';
+        const safeGet = (val, fallback = "Não informado") => val || fallback;
+
+        this.setText("user-name", safeGet(userData.name));
+        this.setText("user-email", safeGet(userData.email));
+        this.setText("user-phone", safeGet(userData.phone));
+        this.setText("user-cpf", safeGet(userData.cpf));
+
+        const addr = userData.address || {};
+        const addressParts = ["street", "number", "neighborhood", "city", "state"]
+            .map(key => safeGet(addr[key]))
+            .filter(val => val !== "Não informado");
+
+        this.setText("user-address", addressParts.length ? addressParts.join(", ") : "Não informado");
+    }
+
+    setText(id, text) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
     }
 
     openModal() {
-        this.getbtnAddDadosModal.onclick = () => {
-            this.getModal.style.display = "block";
-        }
+        const { btnAddDadosModal, modal, span, cancelBtn } = this.#elements;
 
-        this.getSpan.onclick = () => {
-            this.getModal.style.display = "none";
-        }
+        btnAddDadosModal?.addEventListener("click", () => {
+            this.populateForm(this.#currentUserData);
+            modal.style.display = "flex";
+        });
 
-        window.onclick = (e) => {
-            if (e.target == this.getModal) {
-                this.getModal.style.display = "none";
+        span?.addEventListener("click", () => this.closeModal());
+        cancelBtn?.addEventListener("click", () => this.closeModal());
+
+        window.addEventListener("click", (e) => {
+            if (e.target === modal) this.closeModal();
+        });
+    }
+
+    closeModal() {
+        this.#elements.modal.style.display = "none";
+        this.clearForm();
+    }
+
+    clearForm() {
+        this.#elements.form?.reset();
+    }
+
+    populateForm(data) {
+        if (!data) return;
+
+        ["name", "phone", "cpf"].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = data[id] || "";
+        });
+
+        const addr = data.address || {};
+        ["street", "number", "neighborhood", "city", "state"].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = addr[id] || "";
+        });
+    }
+
+    setupFormSubmit() {
+        this.#elements.form?.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.textContent;
+
+            btn.disabled = true;
+            btn.textContent = "Saving...";
+
+            try {
+                const formData = this.collectFormData();
+                const { response } = await this.accountService.updateData(formData);
+                if (response.ok) {
+                    this.closeModal();
+                    await this.profile();
+                }
+            } catch (error) {
+                console.error("Erro ao atualizar dados:", error);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
             }
+        });
+    }
+
+    collectFormData() {
+        const get = (id) => this.#elements.form.querySelector(`#${id}`)?.value.trim() || "";
+        const current = this.#currentUserData;
+
+        return {
+            name: get("name") || current?.name || "",
+            phone: get("phone") || current?.phone || "",
+            cpf: get("cpf") || current?.cpf || "",
+            address: {
+                street: get("street") || current?.address?.street || "",
+                number: get("number") || current?.address?.number || "",
+                neighborhood: get("neighborhood") || current?.address?.neighborhood || "",
+                city: get("city") || current?.address?.city || "",
+                state: get("state") || current?.address?.state || "",
+            },
+        };
+    }
+
+    checkAuth() {
+        const { loginBtn, registerBtn, userDropdownBtn, accountBtn, logoutBtn, adminBar } = this.#elements;
+
+        const hideAll = () => {
+            loginBtn.style.display = "none";
+            registerBtn.style.display = "none";
+            userDropdownBtn.style.display = "none";
+            accountBtn.style.display = "none";
+            logoutBtn.style.display = "none";
+            adminBar.style.display = "none";
+        };
+
+        hideAll();
+
+        if (this.getToken && this.getRole === "ROLE_CLIENT") {
+            userDropdownBtn.style.display = "inline-flex";
+            accountBtn.style.display = "block";
+            logoutBtn.style.display = "block";
+        } else if (this.getToken && this.getRole === "ROLE_ADMIN") {
+            userDropdownBtn.style.display = "inline-flex";
+            accountBtn.style.display = "block";
+            logoutBtn.style.display = "block";
+            adminBar.style.display = "block";
+        } else {
+            loginBtn.style.display = "block";
+            registerBtn.style.display = "block";
         }
     }
 
-    updateData() {
-        document.addEventListener("DOMContentLoaded", () => {
-            const form = document.querySelector("#add-dados-user");
-
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                const formData = {
-                    name: form.querySelector("#name").value.trim() || document.querySelector("#user-name").textContent,
-                    phone: form.querySelector("#phone").value.trim() || document.querySelector("#user-phone").textContent,
-                    address: {
-                        street: form.querySelector("#street").value.trim() || document.querySelector("#user-address").textContent.split(',')[0],
-                        number: form.querySelector("#number").value.trim() || document.querySelector("#user-address").textContent.split(',')[1],
-                        neighborhood: form.querySelector("#neighborhood").value.trim() || document.querySelector("#user-address").textContent.split(',')[2],
-                        city: form.querySelector("#city").value.trim() || document.querySelector("#user-address").textContent.split(',')[3],
-                        state: form.querySelector("#state").value.trim() || document.querySelector("#user-address").textContent.split(',')[4]
-                    },
-                    cpf: form.querySelector("#cpf").value.trim() || document.querySelector("#user-cpf").textContent
-                };
-
-                try {
-                    const { response, responseData } = await this.accountService.updateData(formData);
-                    this.getModal.style.display = "none";
-                    await this.profile();
-                } catch (error) {
-                    console.error('Erro ao atualizar dados:', error);
-                }
-            });
-        })
+    setupLogout() {
+        this.#elements.logoutBtn?.addEventListener("click", (e) => {
+            e.preventDefault();
+            this.authService.logout();
+            window.location.reload();
+        });
     }
 }
 
-const account = new Account();
-account.init();
+document.readyState === "loading"
+    ? document.addEventListener("DOMContentLoaded", () => new Account())
+    : new Account();

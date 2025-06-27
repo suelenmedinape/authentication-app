@@ -22,18 +22,15 @@ export class AuthService {
       const response = await axios.post(this.getLoginUrl, payload, {
         headers: { "Content-Type": "application/json" },
       });
+
       const responseData = response.data;
       this.saveToken(responseData);
       this.startLogoutTimer();
+
       return { response: { ok: true }, responseData };
+
     } catch (error) {
-      if (error.response) {
-        return { 
-          response: { ok: false }, 
-          responseData: error.response.data,
-        };
-      }
-      throw error;
+      return this.#handleError(error);
     }
   }
 
@@ -44,18 +41,14 @@ export class AuthService {
       const response = await axios.post(this.getRegisterUrl, payload, {
         headers: { "Content-Type": "application/json" },
       });
+
       return { response: { ok: true }, responseData: response.data };
+
     } catch (error) {
-      if (error.response) {
-        return { 
-          response: { ok: false }, 
-          responseData: error.response.data,
-        };
-      }
-      throw error;
+      return this.#handleError(error);
     }
   }
-   
+
   saveToken(responseData) {
     localStorage.setItem("token", responseData.token);
     localStorage.setItem("role", responseData.role);
@@ -74,9 +67,7 @@ export class AuthService {
 
   startLogoutTimer() {
     this.stopLogoutTimer();
-    this.#logoutTimer = setTimeout(() => {
-      this.logout();
-    }, this.#FOUR_HOURS_MS);
+    this.#logoutTimer = setTimeout(() => this.logout(), this.#FOUR_HOURS_MS);
   }
 
   stopLogoutTimer() {
@@ -84,5 +75,15 @@ export class AuthService {
       clearTimeout(this.#logoutTimer);
       this.#logoutTimer = null;
     }
+  }
+
+  #handleError(error) {
+    if (error.response) {
+      return {
+        response: { ok: false },
+        responseData: error.response.data,
+      };
+    }
+    throw error;
   }
 }

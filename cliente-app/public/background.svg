@@ -7,13 +7,13 @@
         <filter id="filter0_n_26_7" x="-51.5298" y="-72.0054" width="1826.03" height="1045.67" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
             <feFlood flood-opacity="0" result="BackgroundImageFix"/>
             <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
-            <feTurbulence type="fractalNoise" baseFrequency="2 2" stitchTiles="stitch" numOctaves="3" result="noise" seed="3986"/>
+            <feTurbulence type="fractalNoise" baseFrequency="1 1" stitchTiles="stitch" numOctaves="3" result="noise" seed="3986"/>
             <feColorMatrix in="noise" type="luminanceToAlpha" result="alphaNoise"/>
             <feComponentTransfer in="alphaNoise" result="coloredNoise1">
                 <feFuncA type="discrete" tableValues="1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 "/>
             </feComponentTransfer>
             <feComposite operator="in" in2="shape" in="coloredNoise1" result="noise1Clipped"/>
-            <feFlood flood-color="rgba(0, 0, 0, 0.17)" result="color1Flood"/>
+            <feFlood flood-color="rgba(0, 0, 0, 0.1)" result="color1Flood"/>
             <feComposite operator="in" in2="noise1Clipped" in="color1Flood" result="color1"/>
             <feMerge result="effect1_noise_26_7">
                 <feMergeNode in="shape"/>

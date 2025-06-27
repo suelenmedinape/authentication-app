@@ -4,18 +4,17 @@
 @source "../node_modules/flowbite";
 
 :root {
-    /* Cores primárias */
-    --color-primary-50: #fffbeb;
-    --color-primary-100: #fef3c7;
-    --color-primary-200: #fde68a;
-    --color-primary-300: #fcd34d;
-    --color-primary-400: #fbbf24;
-    --color-primary-500: #f59e0b;
-    --color-primary-600: #d97706;
-    --color-primary-700: #b45309;
-    --color-primary-800: #92400e;
-    --color-primary-900: #78350f;
-    --color-primary-950: #451a03;
+    --color-primary-50:  #f2f9f0;
+    --color-primary-100: #e0f0da;
+    --color-primary-200: #c6dfbb;
+    --color-primary-300: #a7cb99;
+    --color-primary-400: #88b679;
+    --color-primary-500: #518744;
+    --color-primary-600: #426e37;
+    --color-primary-700: #35582d;
+    --color-primary-800: #294323;
+    --color-primary-900: #1d2f1a;
+    --color-primary-950: #0f180d;
 }
 
 /* Classes utilitárias */

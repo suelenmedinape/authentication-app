@@ -1,5 +1,5 @@
 import axios from "axios";
-import {AuthService} from "./AuthService.js";
+import { AuthService } from "./AuthService.js";
 
 export class AccountService {
     #baseUrl = "http://localhost:8080/my";
@@ -11,7 +11,7 @@ export class AccountService {
         this.authService = authService;
         this.#profile = `${this.#baseUrl}/profile`;
         this.#token = this.authService.getToken();
-        
+
         if (!this.#token) {
             throw new Error("Token não encontrado. Usuário não autenticado.");
         }
@@ -30,52 +30,49 @@ export class AccountService {
     }
 
     async profile() {
-        try {
-            const response = await axios.get(this.getProfile, {
-                headers: {
-                    "Authorization": `Bearer ${this.getToken}`
-                }
-            });
-            return {response: {ok: true}, responseData: response.data};
-        } catch (error) {
-            if (error.response) {
-                return {
-                    response: {ok: false},
-                    responseData: error.response.data,
-                    status: error.response.status
-                };
-            }
-            throw new Error("Erro ao buscar perfil do usuário");
-        }
+        return this.#makeRequest("get", this.getProfile);
     }
 
     async updateData(formData) {
-        if (!formData || typeof formData !== 'object') {
+        if (!formData || typeof formData !== "object") {
             throw new Error("Dados do formulário inválidos");
         }
 
+        return this.#makeRequest("put", this.getDetails, formData);
+    }
+
+    async #makeRequest(method, url, data = null) {
         try {
-            const response = await axios.put(this.getDetails, formData, {
+            const config = {
+                method,
+                url,
                 headers: {
                     "Authorization": `Bearer ${this.getToken}`,
-                    "Content-Type": "application/json"
-                }
-            });
-            return {
-                response: {ok: true}, 
-                responseData: response.data,
-                status: response.status
+                    ...(method === "put" && { "Content-Type": "application/json" }),
+                },
+                ...(data && { data }),
             };
+
+            const response = await axios(config);
+            return {
+                response: { ok: true },
+                responseData: response.data,
+                status: response.status,
+            };
+
         } catch (error) {
-            console.error("AccountService - Erro ao atualizar dados:", error);
-            if (error.response) {
-                return {
-                    response: {ok: false},
-                    responseData: error.response.data,
-                    status: error.response.status
-                };
-            }
-            throw new Error("Erro ao atualizar dados do usuário");
+            return this.#handleError(error, `Erro ao executar ${method.toUpperCase()} em ${url}`);
         }
+    }
+
+    #handleError(error, fallbackMessage) {
+        if (error.response) {
+            return {
+                response: { ok: false },
+                responseData: error.response.data,
+                status: error.response.status,
+            };
+        }
+        throw new Error(fallbackMessage);
     }
 }
